@@ -1,0 +1,20 @@
+.SCAssistant_New {
+	background-color: #A5E9FF !important;
+}
+
+.SCAssistant_Danger {
+	background-color: #F77878 !important;
+	font-weight: bold !important;
+}
+
+.SCAssistant_Warning {
+	background-color: rgba(226, 212, 30, 0.78) !important;
+}
+
+.SCAssistant_OnHold {
+	/*background-color: #A5E9FF !important;*/
+}
+
+.SCAssistant_Safe {
+	/*background-color: #6DEF6D !important;*/
+}
