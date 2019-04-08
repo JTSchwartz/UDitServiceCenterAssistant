@@ -1,9 +1,9 @@
 chrome.runtime.onInstalled.addListener(function() {
-	chrome.storage.sync.set({enabled: false}, function() {
+	chrome.storage.sync.set({enabled: true}, function() {
 		console.log('UDit Service Center Assistant has been enabled');
 	});
-	chrome.storage.sync.set({refresh: false}, function() {
-		console.log('AutoRefresh is currently disabled');
+	chrome.storage.sync.set({refresh: true}, function() {
+		console.log('AutoRefresh is currently enabled');
 	});
 	chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
 		chrome.declarativeContent.onPageChanged.addRules([{
