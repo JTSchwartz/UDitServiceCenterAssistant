@@ -15,4 +15,18 @@ chrome.runtime.onInstalled.addListener(function() {
 	});
 });
 
-// 3600000ms / hour
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+	if (request.greeting === "newTicketNotification") {
+		let opt = {
+			iconUrl: "img/UDLogo128.png",
+			type: 'basic',
+			title: 'New Tickets',
+			message: 'There are new tickets in the queue for you to look at.',
+			priority: 1,
+		};
+		
+		chrome.notifications.create('newTicket', opt, function() {});
+		
+		sendResponse({farewell: new Date()})
+	}
+});

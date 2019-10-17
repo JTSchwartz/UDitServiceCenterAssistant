@@ -1,5 +1,18 @@
 let iframeDoc = null;
 
+const DAY = 86400000;
+const HOUR = 3600000;
+const MIN = 60000;
+const SEC = 1000;
+
+let assistantQueues = {
+	"Student Rentals": runRental,
+	"Open Service Desk -Checked in Machines": runOpenServiceDesk,
+	"Service Desk Tickets": runServiceDesk
+};
+
+let lastNotificationSent = new Date() + (10 * MIN);
+
 try {
 	iframe = document.getElementById("appDesktop");
 	iframeWin = iframe.contentWindow || iframe;
@@ -9,15 +22,9 @@ try {
 }
 
 // ASSISTANT
-sleep(5000).then(() => {
+sleep(5 * SEC).then(() => {
+	buildRefreshers();
 	iframeDoc.getElementById("btnRefresh").href = "javascript: window.location.reload()";
-	let queueRefreshBtn = iframeDoc.getElementsByClassName("refreshAnchor");
-	
-	for (let i = 0; i < queueRefreshBtn.length; i++) {
-		queueRefreshBtn[i].onclick = function () {
-			refresher(3000);
-		};
-	}
 	
 	chrome.storage.sync.get("enabled", function (data) {
 		if (data.enabled) {
@@ -34,62 +41,82 @@ chrome.storage.sync.get("refresh", function (data) {
 	SCAssistantAutoRefresh = data.refresh
 });
 
-sleep(600000).then(() => {
-	setInterval(refresh, 600000);
+sleep(10 * MIN).then(() => {
+	setInterval(refresh, 10 * MIN);
 	
 	function refresh() {
-		if (SCAssistantAutoRefresh) {
+		let onDesktop = iframeDoc.getElementById("lblDesktops");
+		if (onDesktop) onDesktop = onDesktop.offsetParent;
+		
+		if (SCAssistantAutoRefresh && onDesktop) {
 			window.location.reload();
 		}
 	}
 });
 
 // FUNCTIONS
+function buildRefreshers() {
+	let queueRefreshers = iframeDoc.getElementsByClassName("refreshAnchor");
+	let queueSorters = iframeDoc.getElementsByClassName("sort-link");
+	let refreshList = [queueRefreshers, queueSorters];
+	
+	for (let i = 0; i < refreshList.length; i++) {
+		for (let j = 0; j < refreshList[i].length; j++) {
+			refreshList[i][j].onclick = function () {
+				refresher(3 * SEC);
+			};
+		}
+	}
+}
+
 function refresher(time) {
 	chrome.storage.sync.get("enabled", async function (data) {
 		await sleep(time);
 		
 		if (data.enabled) {
-			disableAssistant();
 			runAssistant();
 		}
+		
+		buildRefreshers()
 	});
 }
 
 function runAssistant() {
-	runRental();
-	runOpenServiceDesk();
-	runServiceDesk();
+	let queues = iframeDoc.getElementsByClassName("desktop-module");
+	
+	// Using a foreach causes issues when destructuring the objects
+	for (let i = 0; i < queues.length; i++) {
+		let title = queues[i].getElementsByTagName("h4")[0].innerText;
+		let table = queues[i].children[1].children[0].children[1];
+		
+		if (table === undefined) continue;
+		
+		if (Object.keys(assistantQueues).includes(title)) assistantQueues[title](table)
+	}
 }
 
-function runRental() {
-	let div = iframeDoc.getElementById("Column1");
-	let childDiv = div.getElementsByClassName("ModuleContent")[0];
-	let table = childDiv.children[0].children[1];
-	
+function runRental(table) {
 	for (let i = 0; i < table.children.length; i++) {
 		let row = table.children[i];
-		let timestampString = row.children[3].innerText;
+		let status = row.children[3].innerText;
+		let timestampString = row.children[4].innerText;
 		let timeArray = timestampString.substring(4,);
 		let date = timeArray.split("/");
 		
-		let ticketTime = new Date(parseInt(date[2]) + 2000, parseInt(date[0]) - 1, parseInt(date[1]));
 		let timeNow = new Date(Date.now());
+		// Definitely overkill to catch down to the Millisecond, but hey, why not
+		let ticketTime = new Date(parseInt(date[2]) + 2000, parseInt(date[0]) - 1, parseInt(date[1]) - 1, 23, 59, 59);
 		let timeDif = ticketTime - timeNow;
 		
-		if (timeDif < 0) {
+		if (status === "New") {
+			row.classList.add("SCAssistant_New");
+		} else if (timeDif < DAY) {
 			row.classList.add("SCAssistant_Danger");
-		} else if (timeDif < 86400000) {
-			row.classList.add("SCAssistant_Warning");
 		}
 	}
 }
 
-function runOpenServiceDesk() {
-	let div = iframeDoc.getElementById("Column2");
-	let childDiv = div.getElementsByClassName("ModuleContent")[1];
-	let table = childDiv.children[0].children[1];
-	
+function runOpenServiceDesk(table) {
 	for (let i = 0; i < table.children.length; i++) {
 		let row = table.children[i];
 		let status = row.children[3].innerText;
@@ -106,21 +133,24 @@ function runOpenServiceDesk() {
 		
 		if (status === "New") {
 			row.classList.add("SCAssistant_New");
-		} else if (timeDif > 345600000) {
-			row.classList.add("SCAssistant_Danger");
-		} else if (timeDif > 172800000) {
+			showNewTicketNotification()
+		} else if (status === "On Hold") {
 			row.classList.add("SCAssistant_Warning");
+		} else if (timeDif > DAY) {
+			row.classList.add("SCAssistant_Danger");
+			showNewTicketNotification()
 		}
 	}
 }
 
-function runServiceDesk() {
-	let div = iframeDoc.getElementById("Column3");
-	let childDiv = div.getElementsByClassName("ModuleContent")[2];
-	let table = childDiv.children[0].children[1];
-	
+function runServiceDesk(table) {
 	for (let i = 0; i < table.children.length; i++) {
-		table.children[i].classList.add("SCAssistant_Danger");
+		let row = table.children[i];
+		let status = row.children[3].innerText;
+		
+		if (status !== "On Hold") {
+			row.classList.add("SCAssistant_Danger");
+		}
 	}
 }
 
@@ -134,6 +164,19 @@ function disableAssistant() {
 			list[j].classList.remove(SCAssistant[i].substring(1));
 		}
 	}
+}
+
+let SCAssistantNotifications = true;
+
+chrome.storage.sync.get("notifications", function (data) {
+	SCAssistantNotifications = data.notifications
+});
+
+function showNewTicketNotification() {
+	if ((new Date() - lastNotificationSent) < (10 * MIN) && SCAssistantNotifications) return;
+	lastNotificationSent = new Date();
+	
+	chrome.runtime.sendMessage({greeting: "newTicketNotification"}, function(response) {});
 }
 
 function sleep(ms) {

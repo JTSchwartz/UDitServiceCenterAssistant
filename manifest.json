@@ -1,8 +1,8 @@
 {
 	"name": "UDit Service Center Assistant",
 	"description": "Assistant for UDit Service Center",
-	"version": "1.0",
-	"permissions": ["activeTab", "declarativeContent", "storage"],
+	"version": "2.4.0",
+	"permissions": ["activeTab", "declarativeContent", "notifications", "storage"],
 	"background": {
 		"scripts": ["background.js"],
 		"persistent": false
