@@ -87,11 +87,11 @@ function runAssistant() {
 	// Using a foreach causes issues when destructuring the objects
 	for (let i = 0; i < queues.length; i++) {
 		let title = queues[i].getElementsByTagName("h4")[0].innerText;
-		let table = queues[i].children[1].children[0].children[1];
+		let table = queues[i].children[1].children[0].children[0];
 		
 		if (table === undefined) continue;
 		
-		if (Object.keys(assistantQueues).includes(title)) assistantQueues[title](table)
+		if (table) if (Object.keys(assistantQueues).includes(title)) assistantQueues[title](table.children[1]);
 	}
 }
 
