@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b547cdd7-d48e-4e16-a314-b9148de75ea1" name="Default Changelist" comment="" />
+    <list default="true" id="b547cdd7-d48e-4e16-a314-b9148de75ea1" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SCAssistant.js" beforeDir="false" afterPath="$PROJECT_DIR$/SCAssistant.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SCAssistantStyles.css" beforeDir="false" afterPath="$PROJECT_DIR$/SCAssistantStyles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/popup.html" beforeDir="false" afterPath="$PROJECT_DIR$/popup.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,9 +30,8 @@
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../UDitCallCenterAssistant/UDitCallCenterAssistant_3.2.1" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -38,7 +43,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1605211607390</updated>
-      <workItem from="1605211608571" duration="1403000" />
+      <workItem from="1605211608571" duration="2440000" />
+      <workItem from="1605636410152" duration="2739000" />
     </task>
     <servers />
   </component>
@@ -46,9 +52,21 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="233" y="73" key="Vcs.Push.Dialog.v2" timestamp="1605213013628">
+    <state x="421" y="95" key="FileChooserDialogImpl" timestamp="1605636429440">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state x="233" y="73" key="Vcs.Push.Dialog.v2/0.0.1280.680@0.0.1280.680" timestamp="1605213013628" />
+    <state x="421" y="95" key="FileChooserDialogImpl/0.0.1280.680@0.0.1280.680" timestamp="1605636429440" />
+    <state x="233" y="73" key="Vcs.Push.Dialog.v2" timestamp="1605641467506">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state x="233" y="73" key="Vcs.Push.Dialog.v2/0.0.1280.680@0.0.1280.680" timestamp="1605641467506" />
+    <state x="336" y="164" key="com.intellij.ide.util.TipDialog" timestamp="1605636410259">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state x="336" y="164" key="com.intellij.ide.util.TipDialog/0.0.1280.680@0.0.1280.680" timestamp="1605636410259" />
+    <state x="313" y="53" key="git4idea.branch.GitSmartOperationDialog" timestamp="1605641506809">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state x="313" y="53" key="git4idea.branch.GitSmartOperationDialog/0.0.1280.680@0.0.1280.680" timestamp="1605641506809" />
   </component>
 </project>
