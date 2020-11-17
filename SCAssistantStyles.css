@@ -18,3 +18,7 @@
 .SCAssistant_Safe {
 	/*background-color: #6DEF6D !important;*/
 }
+
+.SCAssistant_WarningOrange {
+	background-color: darkorange !important;
+}

@@ -110,8 +110,10 @@ function runRental(table) {
 		
 		if (status === "New") {
 			row.classList.add("SCAssistant_New");
-		} else if (timeDif < DAY) {
+		} else if (timeDif === DAY){
 			row.classList.add("SCAssistant_Danger");
+		} else if (timeDif < DAY) {
+			row.classList.add("SCAssistant_Warning");
 		}
 	}
 }
@@ -134,11 +136,12 @@ function runOpenServiceDesk(table) {
 		if (status === "New") {
 			row.classList.add("SCAssistant_New");
 			showNewTicketNotification()
-		} else if (status === "On Hold") {
-			row.classList.add("SCAssistant_Warning");
-		} else if (timeDif > DAY) {
+		} else if (timeDif > DAY * 4) { //If the ticket hasn't been modified in over 4 days - Danger
 			row.classList.add("SCAssistant_Danger");
-			showNewTicketNotification()
+		} else if (timeDif > DAY * 3) { //If the ticket hasn't been modified within 3 days - WarningOrange
+			row.classList.add("SCAssistant_WarningOrange");
+		} else if (timeDif > DAY * 2) { //If the ticket hasn't been modified within 2 days - Warning
+			row.classList.add("SCAssistant_Warning");
 		}
 	}
 }
