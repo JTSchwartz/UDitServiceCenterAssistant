@@ -110,9 +110,9 @@ function runRental(table) {
 		
 		if (status === "New") {
 			row.classList.add("SCAssistant_New");
-		} else if (timeDif === DAY){
+		} else if (timeDif < DAY){
 			row.classList.add("SCAssistant_Danger");
-		} else if (timeDif < DAY) {
+		} else if (timeDif > DAY) {
 			row.classList.add("SCAssistant_Warning");
 		}
 	}
