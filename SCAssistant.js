@@ -6,9 +6,11 @@ const MIN = 60000;
 const SEC = 1000;
 
 let assistantQueues = {
-	"Student Rentals": runRental,
-	"Open Service Desk -Checked in Machines": runOpenServiceDesk,
-	"Service Desk Tickets": runServiceDesk
+	"Student Rentals": colorWarningOrDangerIfNotNew,
+	"Open Service Desk -Checked in Machines": colorIfNotNewAndUnmodifiedForMoreThenOneDay,
+	"Rental Reimage Queue": colorIfNotNewAndUnmodifiedForMoreThenOneDay,
+	"Service Desk Tickets": colorIfNotOnHold,
+	"Jason's Queue": colorIfNotNewAndUnmodifiedForMoreThenOneDay
 };
 
 let lastNotificationSent = new Date() + (10 * MIN);
@@ -90,23 +92,18 @@ function runAssistant() {
 		let table = queues[i].children[1].children[0].children[0];
 		
 		if (table === undefined) continue;
-		
-		if (table) if (Object.keys(assistantQueues).includes(title)) assistantQueues[title](table.children[1]);
+		if (table) if (Object.keys(assistantQueues).includes(title)) {
+			assistantQueues[title](table.children[1]);
+		}
 	}
 }
 
-function runRental(table) {
+function colorWarningOrDangerIfNotNew(table) {
 	for (let i = 0; i < table.children.length; i++) {
 		let row = table.children[i];
 		let status = row.children[3].innerText;
 		let timestampString = row.children[4].innerText;
-		let timeArray = timestampString.substring(4,);
-		let date = timeArray.split("/");
-		
-		let timeNow = new Date(Date.now());
-		// Definitely overkill to catch down to the Millisecond, but hey, why not
-		let ticketTime = new Date(parseInt(date[2]) + 2000, parseInt(date[0]) - 1, parseInt(date[1]) - 1, 23, 59, 59);
-		let timeDif = ticketTime - timeNow;
+		let timeDif = unmodifiedSinceDate(timestampString);
 		
 		if (status === "New") {
 			row.classList.add("SCAssistant_New");
@@ -118,20 +115,12 @@ function runRental(table) {
 	}
 }
 
-function runOpenServiceDesk(table) {
+function colorIfNotNewAndUnmodifiedForMoreThenOneDay(table) {
 	for (let i = 0; i < table.children.length; i++) {
 		let row = table.children[i];
 		let status = row.children[3].innerText;
 		let timestampString = row.children[4].innerText;
-		let timeArray = timestampString.substring(4,).split(" ");
-		let date = timeArray[0].split("/");
-		let time = timeArray[1].split(":");
-		
-		if (timeArray[2] === "PM") time[0] = (parseInt(time[0]) + 12).toString();
-		
-		let ticketTime = new Date(parseInt(date[2]) + 2000, parseInt(date[0]) - 1, parseInt(date[1]), parseInt(time[0]), parseInt(time[1]), 0, 0);
-		let timeNow = new Date(Date.now());
-		let timeDif = timeNow - ticketTime;
+		let timeDif = unmodifiedSinceDateTime(timestampString);
 		
 		if (status === "New") {
 			row.classList.add("SCAssistant_New");
@@ -146,10 +135,10 @@ function runOpenServiceDesk(table) {
 	}
 }
 
-function runServiceDesk(table) {
+function colorIfNotOnHold(table) {
 	for (let i = 0; i < table.children.length; i++) {
 		let row = table.children[i];
-		let status = row.children[3].innerText;
+		let status = row.children[4].innerText;
 		
 		if (status !== "On Hold") {
 			row.classList.add("SCAssistant_Danger");
@@ -180,6 +169,32 @@ function showNewTicketNotification() {
 	lastNotificationSent = new Date();
 	
 	chrome.runtime.sendMessage({greeting: "newTicketNotification"}, function(response) {});
+}
+
+function unmodifiedSinceDate(timestampString) {
+	let timeArray = timestampString.substring(4,);
+	let date = timeArray.split("/");
+	
+	let timeNow = new Date(Date.now());
+	// Definitely overkill to catch down to the Millisecond, but hey, why not
+	let ticketTime = new Date(parseInt(date[2]) + 2000, parseInt(date[0]) - 1, parseInt(date[1]) - 1, 23, 59, 59);
+	return ticketTime - timeNow;
+}
+
+function unmodifiedSinceDateTime(timestampString) {
+	let timeArray = timestampString.substring(4).split(" ");
+	let date = timeArray[0].split("/");
+	let time = timeArray[1].split(":");
+	
+	if (timeArray[2] === "PM" && parseInt(time[0]) < 12) {
+		time[0] = (parseInt(time[0]) + 12).toString();
+	} else if (timeArray[2] === "AM" && parseInt(time[0]) === 12) {
+		time[0] = "0";
+	}
+	
+	let ticketTime = new Date(parseInt(date[2]) + 2000, parseInt(date[0]) - 1, parseInt(date[1]), parseInt(time[0]), parseInt(time[1]), 0, 0);
+	let timeNow = new Date(Date.now());
+	return timeNow - ticketTime;
 }
 
 function sleep(ms) {
